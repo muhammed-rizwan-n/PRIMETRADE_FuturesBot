@@ -52,3 +52,40 @@ The interface is built to operate on the **Binance USDT-M Futures Testnet**, mak
 - `python-binance` (Python Binance API client)
 - `tkinter` (comes pre-installed with most Python distributions)
 - Internet connection for API access
+
+---
+
+## 🚀 How to Run
+
+- Install Dependencies
+  Ensure you have Python 3.7+ installed. Then install the required package:
+  `pip install python-binance`
+
+- Set Up API Credentials
+  Acquire your Binance Futures Testnet API credentials and save them in the following files:
+
+    keys/testnet_api_key.txt – your API key
+    keys/testnet_api_secret.txt – your API secret
+
+- Run the Application
+  Execute the main script:
+    `python index.py`
+
+---
+
+## 🖼️ Output Images
+
+-Screenshots of the GUI interface:
+<img src="./pictures/SC1.png" alt="Screenshot 1" /> <img src="./pictures/SC2.png" alt="Screenshot 2" /> <img src="./pictures/SC3.png" alt="Screenshot 3" /> <img src="./pictures/SC4.png" alt="Screenshot 4" /> <img src="./pictures/SC5.png" alt="Screenshot 5" /> <img src="./pictures/SC6.png" alt="Screenshot 6" />
+
+---
+
+## 📌 Notes
+
+Only USDT-Margined Futures pairs are supported (e.g., BTCUSDT, ETHUSDT).
+
+Meant for educational and testnet purposes only.
+
+Do not use with live funds unless fully tested and understood.
+
+
