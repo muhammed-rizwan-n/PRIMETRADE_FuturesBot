@@ -6,34 +6,48 @@ class BotGUI:
         self.bot = bot
         self.root = root
         self.root.title("USDT-M Futures Bot")
+        
+        self.notebook = ttk.Notebook(root)
+        self.order_entry_frame = ttk.Frame(self.notebook)
+        self.orders_list_frame = ttk.Frame(self.notebook)
 
-        tk.Label(root, text="Symbol (e.g. BTC):").grid(row=0, column=0)
-        self.symbol_entry = tk.Entry(root)
+        self.notebook.add(self.order_entry_frame,text="Place Order")
+        self.notebook.add(self.orders_list_frame, text="Active Orders")
+        self.notebook.pack(expand=True, fill="both")
+
+        self.build_order_tab()
+        self.build_orders_list_tab()
+
+    def build_order_tab(self):
+        frame = self.order_entry_frame
+
+        tk.Label(frame, text="Symbol (e.g. BTC):").grid(row=0, column=0)
+        self.symbol_entry = tk.Entry(frame)
         self.symbol_entry.grid(row=0, column=1)
 
-        tk.Label(root, text="Side:").grid(row=1, column=0)
+        tk.Label(frame, text="Side:").grid(row=1, column=0)
         self.side_var = tk.StringVar(value="BUY")
-        ttk.Combobox(root, textvariable=self.side_var, values=["BUY", "SELL"]).grid(row=1, column=1)
+        ttk.Combobox(frame, textvariable=self.side_var, values=["BUY", "SELL"]).grid(row=1, column=1)
 
-        tk.Label(root, text="Order Type:").grid(row=2, column=0)
+        tk.Label(frame, text="Order Type:").grid(row=2, column=0)
         self.type_var = tk.StringVar(value="MARKET")
-        self.type_box = ttk.Combobox(root, textvariable=self.type_var, values=["MARKET", "LIMIT"])
+        self.type_box = ttk.Combobox(frame, textvariable=self.type_var, values=["MARKET", "LIMIT"])
         self.type_box.grid(row=2, column=1)
         self.type_box.bind("<<ComboboxSelected>>", self.toggle_fields)
 
-        tk.Label(root, text="Quantity:").grid(row=3, column=0)
-        self.qty_entry = tk.Entry(root)
+        tk.Label(frame, text="Quantity:").grid(row=3, column=0)
+        self.qty_entry = tk.Entry(frame)
         self.qty_entry.grid(row=3, column=1)
 
-        tk.Label(root, text="Limit Price:").grid(row=4, column=0)
-        self.price_entry = tk.Entry(root)
+        tk.Label(frame, text="Limit Price:").grid(row=4, column=0)
+        self.price_entry = tk.Entry(frame)
         self.price_entry.grid(row=4, column=1)
 
         #Logging
-        self.result = tk.Text(root, height=10, width=50)
+        self.result = tk.Text(frame, height=10, width=50)
         self.result.grid(row=7, columnspan=2)
 
-        tk.Button(root, text="Place Order", command=self.submit_order).grid(row=6, columnspan=2)
+        tk.Button(frame, text="Place Order", command=self.submit_order).grid(row=6, columnspan=2)
 
         self.toggle_fields()  # Disable unused fields at startup
 
@@ -62,3 +76,30 @@ class BotGUI:
         except Exception as e:
             self.result.insert(tk.END, f">> Error: {str(e)}\n\n")
             messagebox.showerror("Order Failed", str(e))
+    
+    def build_orders_list_tab(self):
+        frame = self.orders_list_frame
+        tk.Button(frame, text="Refresh Orders", command=self.refresh_orders).pack(pady=5)
+
+        self.orders_tree = ttk.Treeview(frame, columns=("symbol", "side", "type", "price", "qty", "status"), show='headings')
+        for col in self.orders_tree["columns"]:
+            self.orders_tree.heading(col, text=col)
+        self.orders_tree.pack(expand=True, fill="both", padx=10, pady=10)
+
+    def refresh_orders(self):
+        try:
+            for row in self.orders_tree.get_children():
+                self.orders_tree.delete(row)
+
+            orders = self.bot.get_open_orders()
+            for order in orders:
+                self.orders_tree.insert("", "end", values=(
+                    order["symbol"],
+                    order["side"],
+                    order["type"],
+                    order.get("price", ""),
+                    order["origQty"],
+                    order["status"]
+                ))
+        except Exception as e:
+            messagebox.showerror("Error", str(e))

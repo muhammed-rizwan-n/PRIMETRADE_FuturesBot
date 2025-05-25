@@ -48,7 +48,13 @@ class BasicBot:
         except Exception as e:
             logging.error(f"Unexpected error: {str(e)}")
             raise
-
+    
+    def get_open_orders(self, symbol=None):
+        try:
+            return self.client.futures_get_open_orders(symbol=symbol) if symbol else self.client.futures_get_open_orders()
+        except Exception as e:
+            logging.error(str(e))
+            raise
 
 if __name__ == "__main__":
     API_KEY = open("./keys/testnet_api_key.txt").read()
