@@ -20,34 +20,48 @@ class BotGUI:
 
     def build_order_tab(self):
         frame = self.order_entry_frame
+        
+        container = ttk.Frame(frame)
+        container.pack(expand=True,fill="both",padx=10,pady=10)
 
-        tk.Label(frame, text="Symbol (e.g. BTC):").grid(row=0, column=0)
-        self.symbol_entry = tk.Entry(frame)
+        #Left side for form input
+        l_frame = ttk.Frame(container)
+        l_frame.pack(side='left',fill='both',expand=True)
+
+        #Left Frame components
+        tk.Label(l_frame, text="Symbol (e.g. BTC):").grid(row=0, column=0)
+        self.symbol_entry = tk.Entry(l_frame)
         self.symbol_entry.grid(row=0, column=1)
 
-        tk.Label(frame, text="Side:").grid(row=1, column=0)
+        tk.Label(l_frame, text="Side:").grid(row=1, column=0)
         self.side_var = tk.StringVar(value="BUY")
-        ttk.Combobox(frame, textvariable=self.side_var, values=["BUY", "SELL"]).grid(row=1, column=1)
+        ttk.Combobox(l_frame, textvariable=self.side_var, values=["BUY", "SELL"]).grid(row=1, column=1)
 
-        tk.Label(frame, text="Order Type:").grid(row=2, column=0)
+        tk.Label(l_frame, text="Order Type:").grid(row=2, column=0)
         self.type_var = tk.StringVar(value="MARKET")
-        self.type_box = ttk.Combobox(frame, textvariable=self.type_var, values=["MARKET", "LIMIT"])
+        self.type_box = ttk.Combobox(l_frame, textvariable=self.type_var, values=["MARKET", "LIMIT"])
         self.type_box.grid(row=2, column=1)
         self.type_box.bind("<<ComboboxSelected>>", self.toggle_fields)
 
-        tk.Label(frame, text="Quantity:").grid(row=3, column=0)
-        self.qty_entry = tk.Entry(frame)
+        tk.Label(l_frame, text="Quantity:").grid(row=3, column=0)
+        self.qty_entry = tk.Entry(l_frame)
         self.qty_entry.grid(row=3, column=1)
 
-        tk.Label(frame, text="Limit Price:").grid(row=4, column=0)
-        self.price_entry = tk.Entry(frame)
+        tk.Label(l_frame, text="Limit Price:").grid(row=4, column=0)
+        self.price_entry = tk.Entry(l_frame)
         self.price_entry.grid(row=4, column=1)
 
-        #Logging
-        self.result = tk.Text(frame, height=10, width=50)
-        self.result.grid(row=7, columnspan=2)
+        tk.Button(l_frame, text="Place Order", command=self.submit_order).grid(row=6, columnspan=2)
 
-        tk.Button(frame, text="Place Order", command=self.submit_order).grid(row=6, columnspan=2)
+        #Right Side: Log
+        log_frame = ttk.Frame(container, width=self.root.winfo_screenwidth() // 2)
+        log_frame.pack(side="right", fill="both")
+        tk.Label(log_frame, text="Log Output:").pack(anchor="nw")
+        self.result = tk.Text(log_frame, height=20, width=60)
+        self.result.pack(expand=True, fill="both")
+
+        #self.result = tk.Text(frame, height=10, width=50)
+        #self.result.grid(row=7, columnspan=2)
 
         self.toggle_fields()  # Disable unused fields at startup
 
