@@ -3,6 +3,8 @@ from binance.client import Client
 from binance.enums import *
 from binance.exceptions import BinanceAPIException, BinanceOrderException
 
+from gui import BotGUI,tk
+
 class BasicBot:
     def __init__(self, api_key, api_secret, testnet=True):
         self.client = Client(api_key, api_secret)
@@ -35,13 +37,17 @@ class BasicBot:
 
             logging.info("Order placed successfully.")
             print("Order details:", order)
+            return order
 
         except BinanceAPIException as e:
             logging.error(f"Binance API error: {e.message}")
+            raise
         except BinanceOrderException as e:
             logging.error(f"Binance Order error: {e.message}")
+            raise
         except Exception as e:
             logging.error(f"Unexpected error: {str(e)}")
+            raise
 
 
 if __name__ == "__main__":
@@ -49,20 +55,6 @@ if __name__ == "__main__":
     API_SECRET = open("./keys/testnet_api_secret.txt").read()
 
     bot = BasicBot(API_KEY, API_SECRET)
-
-    symbol = input("Enter symbol (e.g., BTC): ").strip().upper()
-    side = input("Enter side (BUY/SELL): ").strip().upper()
-    order_type = input("Enter order type (MARKET/LIMIT): ").strip().upper()
-    quantity = float(input("Enter quantity: "))
-
-    price = None
-    if symbol == '':
-        print("Empty 'SYMBOL'")
-    if order_type == 'LIMIT':
-        price = input("Enter limit price: ")
-        try:
-            price = float(price)
-        except:
-            print("Invalid price entered.")
-        
-    bot.place_order(symbol+'USDT', side, order_type, quantity, price)
+    root = tk.Tk()
+    app = BotGUI(root, bot)
+    root.mainloop()
